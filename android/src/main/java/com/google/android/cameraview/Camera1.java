@@ -878,7 +878,8 @@ class Camera1 extends CameraViewImpl implements MediaRecorder.OnInfoListener,
         if (maxFileSize != -1) {
             mMediaRecorder.setMaxFileSize(maxFileSize);
         }
-
+        mMediaRecorder.setVideoSize(3840, 2160);
+        mMediaRecorder.setVideoFrameRate(15);
         mMediaRecorder.setOnInfoListener(this);
         mMediaRecorder.setOnErrorListener(this);
     }
