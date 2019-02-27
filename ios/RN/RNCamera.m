@@ -725,6 +725,21 @@ static NSDictionary *defaultFaceDetectorOptions = nil;
             [self _updateMetadataObjectsToRecognize];
         }
 
+        CMTime frameDuration = CMTimeMake(1, 15);
+        NSArray *supportedFrameRateRanges = [captureDevice.activeFormat videoSupportedFrameRateRanges];
+        BOOL frameRateSupported = NO;
+        for (AVFrameRateRange *range in supportedFrameRateRanges) {
+          if (CMTIME_COMPARE_INLINE(frameDuration, >=, range.minFrameDuration) &&
+              CMTIME_COMPARE_INLINE(frameDuration, <=, range.maxFrameDuration)) {
+            frameRateSupported = YES;
+          }
+        }
+      
+        if (frameRateSupported && [captureDevice lockForConfiguration:&error]) {
+          [captureDevice setActiveVideoMaxFrameDuration:frameDuration];
+          [captureDevice setActiveVideoMinFrameDuration:frameDuration];
+          [captureDevice unlockForConfiguration];
+        }
         [self.session commitConfiguration];
     });
 }
