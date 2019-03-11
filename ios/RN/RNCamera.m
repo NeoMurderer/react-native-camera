@@ -537,6 +537,12 @@ static NSDictionary *defaultFaceDetectorOptions = nil;
     }
 
     AVCaptureConnection *connection = [self.movieFileOutput connectionWithMediaType:AVMediaTypeVideo];
+  
+    if (connection.isVideoMinFrameDurationSupported)
+      connection.videoMinFrameDuration = CMTimeMake(1, [options[@"fps"] integerValue]);
+    if (connection.isVideoMaxFrameDurationSupported)
+      connection.videoMaxFrameDuration = CMTimeMake(1, [options[@"fps"] integerValue]);
+
     if (self.videoStabilizationMode != 0) {
         if (connection.isVideoStabilizationSupported == NO) {
             RCTLogWarn(@"%s: Video Stabilization is not supported on this device.", __func__);
@@ -546,16 +552,29 @@ static NSDictionary *defaultFaceDetectorOptions = nil;
     }
     [connection setVideoOrientation:orientation];
 
-    if (options[@"codec"]) {
-      if (@available(iOS 10, *)) {
-        AVVideoCodecType videoCodecType = options[@"codec"];
+     if (@available(iOS 11, *)) {
+        AVVideoCodecType videoCodecType = AVVideoCodecTypeH264;
         if ([self.movieFileOutput.availableVideoCodecTypes containsObject:videoCodecType]) {
-          [self.movieFileOutput setOutputSettings:@{AVVideoCodecKey:videoCodecType} forConnection:connection];
+          NSArray<NSString *> *keys = [self.movieFileOutput supportedOutputSettingsKeysForConnection:connection];
+        
+          NSInteger bitrate = [options[@"videoBitrate"] integerValue] * 1024 * 1024;
+          NSDictionary *settings = @{
+               AVVideoCodecKey:videoCodecType,
+//               AVVideoWidthKey:@(3880),
+//               AVVideoHeightKey:@(2160),
+
+               AVVideoCompressionPropertiesKey: @{
+                  AVVideoAverageBitRateKey:@(bitrate),
+                  AVVideoMaxKeyFrameIntervalKey: @([options[@"fps"] integerValue]),
+//                  AVVideoProfileLevelKey: AVVideoProfileLevelH264High41,
+//                  AVVideoMaxKeyFrameIntervalDurationKey:@(15)
+               }
+          };
+          [self.movieFileOutput setOutputSettings:settings forConnection:connection];
           self.videoCodecType = videoCodecType;
         } else {
             RCTLogWarn(@"%s: Setting videoCodec is only supported above iOS version 10.", __func__);
         }
-      }
     }
 
     dispatch_async(self.sessionQueue, ^{
@@ -574,6 +593,7 @@ static NSDictionary *defaultFaceDetectorOptions = nil;
                 [connection setVideoMirrored:YES];
             }
         }
+        
 
         NSURL *outputURL = [[NSURL alloc] initFileURLWithPath:path];
         [self.movieFileOutput startRecordingToOutputFileURL:outputURL recordingDelegate:self];
@@ -709,7 +729,11 @@ static NSDictionary *defaultFaceDetectorOptions = nil;
             RCTLog(@"%s: %@", __func__, error);
             return;
         }
-
+      
+      
+//        connection.videoMaxFrameDuration = frameDuration;
+//        connection.videoMinFrameDuration = frameDuration;
+        
         [self.session removeInput:self.videoCaptureDeviceInput];
         if ([self.session canAddInput:captureDeviceInput]) {
             [self.session addInput:captureDeviceInput];
@@ -724,8 +748,8 @@ static NSDictionary *defaultFaceDetectorOptions = nil;
             [self.previewLayer.connection setVideoOrientation:orientation];
             [self _updateMetadataObjectsToRecognize];
         }
-
-        CMTime frameDuration = CMTimeMake(1, 15);
+       /*
+        CMTime frameDuration = CMTimeMake(1, [self.options[@"fps"] integerValue]);
         NSArray *supportedFrameRateRanges = [captureDevice.activeFormat videoSupportedFrameRateRanges];
         BOOL frameRateSupported = NO;
         for (AVFrameRateRange *range in supportedFrameRateRanges) {
@@ -734,12 +758,13 @@ static NSDictionary *defaultFaceDetectorOptions = nil;
             frameRateSupported = YES;
           }
         }
-      
         if (frameRateSupported && [captureDevice lockForConfiguration:&error]) {
+          
           [captureDevice setActiveVideoMaxFrameDuration:frameDuration];
           [captureDevice setActiveVideoMinFrameDuration:frameDuration];
           [captureDevice unlockForConfiguration];
-        }
+        } */
+      
         [self.session commitConfiguration];
     });
 }
@@ -1037,7 +1062,8 @@ static NSDictionary *defaultFaceDetectorOptions = nil;
         [self setupOrDisableTextDetector];
     }
 
-    AVCaptureSessionPreset preset = [RNCameraUtils captureSessionPresetForVideoResolution:[self defaultVideoQuality]];
+    AVCaptureSessionPreset preset = AVCaptureSessionPreset3840x2160;
+  
     if (self.session.sessionPreset != preset) {
         [self updateSessionPreset: preset == AVCaptureSessionPresetHigh ? AVCaptureSessionPresetPhoto: preset];
     }
