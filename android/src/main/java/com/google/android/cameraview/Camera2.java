@@ -1088,7 +1088,7 @@ class Camera2 extends CameraViewImpl implements MediaRecorder.OnInfoListener, Me
         @SuppressWarnings("ConstantConditions")
         int sensorOrientation = mCameraCharacteristics.get(CameraCharacteristics.SENSOR_ORIENTATION);
         return (sensorOrientation +
-                mDisplayOrientation * (mFacing == Constants.FACING_FRONT ? 1 : -1) +
+                mDisplayOrientation +
                 360) % 360;
     }
 
