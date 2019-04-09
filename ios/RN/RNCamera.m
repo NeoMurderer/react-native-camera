@@ -553,7 +553,14 @@ static NSDictionary *defaultFaceDetectorOptions = nil;
     [connection setVideoOrientation:orientation];
 
      if (@available(iOS 11, *)) {
-        AVVideoCodecType videoCodecType = AVVideoCodecTypeH264;
+        AVVideoCodecType videoCodecType;
+        if ([self.movieFileOutput.availableVideoCodecTypes containsObject:AVVideoCodecTypeHEVC]) {
+            videoCodecType = AVVideoCodecTypeHEVC;
+        } else if(@available(iOS 11, *)) {
+            videoCodecType = AVVideoCodecTypeH264;
+        } else {
+            videoCodecType = AVVideoCodecH264;
+        }
         if ([self.movieFileOutput.availableVideoCodecTypes containsObject:videoCodecType]) {
           NSArray<NSString *> *keys = [self.movieFileOutput supportedOutputSettingsKeysForConnection:connection];
         
