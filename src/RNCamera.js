@@ -398,6 +398,11 @@ export default class Camera extends React.Component<PropsType, StateType> {
     return await CameraManager.getAvailablePictureSizes(this.props.ratio, this._cameraHandle);
   };
 
+  getSupportedPreviewFpsRange = async (): string[] => {
+    //$FlowFixMe
+    return await CameraManager.getSupportedPreviewFpsRange(this._cameraHandle);
+  };
+
   async recordAsync(options?: RecordingOptions) {
     if (!options || typeof options !== 'object') {
       options = {};

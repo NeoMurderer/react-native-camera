@@ -470,12 +470,12 @@ class Camera1 extends CameraViewImpl implements MediaRecorder.OnInfoListener,
     }
 
     @Override
-    boolean record(String path, int maxDuration, int maxFileSize, boolean recordAudio, CamcorderProfile profile, int orientation) {
+    boolean record(String path, int maxDuration, int maxFileSize, boolean recordAudio, CamcorderProfile profile, int orientation, int fps) {
         if (!mIsRecording) {
             if (orientation != Constants.ORIENTATION_AUTO) {
                 mOrientation = orientation;
             }
-            setUpMediaRecorder(path, maxDuration, maxFileSize, recordAudio, profile);
+            setUpMediaRecorder(path, maxDuration, maxFileSize, recordAudio, profile, fps);
             try {
                 mMediaRecorder.prepare();
                 mMediaRecorder.start();
@@ -847,7 +847,7 @@ class Camera1 extends CameraViewImpl implements MediaRecorder.OnInfoListener,
         mCallback.onFramePreview(data, previewSize.width, previewSize.height, mDeviceOrientation);
     }
 
-    private void setUpMediaRecorder(String path, int maxDuration, int maxFileSize, boolean recordAudio, CamcorderProfile profile) {
+    private void setUpMediaRecorder(String path, int maxDuration, int maxFileSize, boolean recordAudio, CamcorderProfile profile, int fps) {
         mMediaRecorder = new MediaRecorder();
         mCamera.unlock();
 
@@ -879,7 +879,7 @@ class Camera1 extends CameraViewImpl implements MediaRecorder.OnInfoListener,
             mMediaRecorder.setMaxFileSize(maxFileSize);
         }
         mMediaRecorder.setVideoSize(3840, 2160);
-        mMediaRecorder.setVideoFrameRate(15);
+        mMediaRecorder.setVideoFrameRate(fps);
         mMediaRecorder.setOnInfoListener(this);
         mMediaRecorder.setOnErrorListener(this);
     }
