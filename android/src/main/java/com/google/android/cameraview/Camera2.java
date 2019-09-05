@@ -48,6 +48,7 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.SortedSet;
 
@@ -361,6 +362,11 @@ class Camera2 extends CameraViewImpl implements MediaRecorder.OnInfoListener, Me
     }
 
     @Override
+    List<int[]> getSupportedPreviewFpsRange() {
+        return null;
+    }
+
+    @Override
     void setPictureSize(Size size) {
         if (mCaptureSession != null) {
             try {
@@ -478,8 +484,9 @@ class Camera2 extends CameraViewImpl implements MediaRecorder.OnInfoListener, Me
         }
     }
 
+
     @Override
-    boolean record(String path, int maxDuration, int maxFileSize, boolean recordAudio, CamcorderProfile profile, int orientation) {
+    boolean record(String path, int maxDuration, int maxFileSize, boolean recordAudio, CamcorderProfile profile, int orientation, int fps) {
         if (!mIsRecording) {
             setUpMediaRecorder(path, maxDuration, maxFileSize, recordAudio, profile);
             try {

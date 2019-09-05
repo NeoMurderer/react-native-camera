@@ -22,6 +22,8 @@ import android.graphics.SurfaceTexture;
 
 import com.facebook.react.bridge.ReadableMap;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 import java.util.SortedSet;
 
@@ -56,7 +58,7 @@ abstract class CameraViewImpl {
     abstract Set<AspectRatio> getSupportedAspectRatios();
     
     abstract SortedSet<Size> getAvailablePictureSizes(AspectRatio ratio);
-    
+    abstract List<int[]> getSupportedPreviewFpsRange();
     abstract void setPictureSize(Size size);
     
     abstract Size getPictureSize();

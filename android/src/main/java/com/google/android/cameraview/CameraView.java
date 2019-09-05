@@ -38,6 +38,7 @@ import com.facebook.react.bridge.ReadableMap;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 import java.util.SortedSet;
 
@@ -414,6 +415,9 @@ public class CameraView extends FrameLayout {
      */
     public SortedSet<Size> getAvailablePictureSizes(@NonNull AspectRatio ratio) {
         return mImpl.getAvailablePictureSizes(ratio);
+    }
+    public List<int[]> getSupportedPreviewFpsRange() {
+        return mImpl.getSupportedPreviewFpsRange();
     }
     
     /**

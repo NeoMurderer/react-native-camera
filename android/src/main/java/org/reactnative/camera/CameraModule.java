@@ -22,6 +22,7 @@ import javax.annotation.Nullable;
 import java.io.File;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
@@ -368,6 +369,35 @@ public class CameraModule extends ReactContextBaseJavaModule {
                     }
                 } catch (Exception e) {
                     promise.reject("E_CAMERA_BAD_VIEWTAG", "getAvailablePictureSizesAsync: Expected a Camera component");
+                }
+            }
+        });
+    }
+
+    @ReactMethod
+    public void getSupportedPreviewFpsRange(final int viewTag, final Promise promise) {
+        final ReactApplicationContext context = getReactApplicationContext();
+        UIManagerModule uiManager = context.getNativeModule(UIManagerModule.class);
+        uiManager.addUIBlock(new UIBlock() {
+            @Override
+            public void execute(NativeViewHierarchyManager nativeViewHierarchyManager) {
+                final RNCameraView cameraView;
+
+                try {
+                    cameraView = (RNCameraView) nativeViewHierarchyManager.resolveView(viewTag);
+
+                    if (cameraView.isCameraOpened()) {
+                        List<int []> ranges = cameraView.getSupportedPreviewFpsRange();
+                        WritableArray result = Arguments.createArray();
+                        for (int[] range : ranges) {
+                            result.pushInt(range[0]);
+                        }
+                        promise.resolve(result);
+                    } else {
+                        promise.reject("E_CAMERA_UNAVAILABLE", "Camera is not running");
+                    }
+                } catch (Exception e) {
+                    promise.reject("E_CAMERA_BAD_VIEWTAG", e.getMessage());
                 }
             }
         });

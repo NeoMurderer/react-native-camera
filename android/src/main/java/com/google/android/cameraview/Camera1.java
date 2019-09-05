@@ -29,6 +29,7 @@ import com.facebook.react.bridge.ReadableMap;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.SortedSet;
@@ -246,7 +247,12 @@ class Camera1 extends CameraViewImpl implements MediaRecorder.OnInfoListener,
     SortedSet<Size> getAvailablePictureSizes(AspectRatio ratio) {
         return mPictureSizes.sizes(ratio);
     }
-    
+
+    @Override
+    List<int[]> getSupportedPreviewFpsRange() {
+        return mCameraParameters.getSupportedPreviewFpsRange();
+    }
+
     @Override
     void setPictureSize(Size size) {
         if (size == null) {
