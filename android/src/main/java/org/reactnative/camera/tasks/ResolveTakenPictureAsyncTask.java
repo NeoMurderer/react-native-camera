@@ -1,21 +1,23 @@
 package org.reactnative.camera.tasks;
 
+import android.annotation.TargetApi;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
+import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.AsyncTask;
-import android.support.media.ExifInterface;
+import android.os.Build;
 import android.util.Base64;
-
-import org.reactnative.camera.RNCameraViewHelper;
-import org.reactnative.camera.utils.RNFileUtils;
 
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableMap;
+
+import org.reactnative.camera.RNCameraViewHelper;
+import org.reactnative.camera.utils.RNFileUtils;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -46,6 +48,7 @@ public class ResolveTakenPictureAsyncTask extends AsyncTask<Void, Void, Writable
         return (int) (mOptions.getDouble("quality") * 100);
     }
 
+    @TargetApi(Build.VERSION_CODES.N)
     @Override
     protected WritableMap doInBackground(Void... voids) {
         WritableMap response = Arguments.createMap();
@@ -87,7 +90,7 @@ public class ResolveTakenPictureAsyncTask extends AsyncTask<Void, Void, Writable
 
         try {
             if (inputStream != null) {
-                ExifInterface exifInterface = new ExifInterface(inputStream);
+                androidx.exifinterface.media.ExifInterface exifInterface = new androidx.exifinterface.media.ExifInterface(inputStream);
                 // Get orientation of the image from mImageData via inputStream
                 int orientation = exifInterface.getAttributeInt(ExifInterface.TAG_ORIENTATION,
                         ExifInterface.ORIENTATION_UNDEFINED);
@@ -107,7 +110,7 @@ public class ResolveTakenPictureAsyncTask extends AsyncTask<Void, Void, Writable
 
                 // Write Exif data to the response if requested
                 if (mOptions.hasKey("exif") && mOptions.getBoolean("exif")) {
-                    WritableMap exifData = RNCameraViewHelper.getExifData(exifInterface);
+                    WritableMap exifData = (WritableMap) RNCameraViewHelper.getExifData(exifInterface);
                     response.putMap("exif", exifData);
                 }
             }

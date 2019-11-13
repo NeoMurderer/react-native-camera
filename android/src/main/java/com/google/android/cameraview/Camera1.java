@@ -22,14 +22,14 @@ import android.hardware.Camera;
 import android.media.CamcorderProfile;
 import android.media.MediaRecorder;
 import android.os.Build;
-import android.support.v4.util.SparseArrayCompat;
 import android.view.SurfaceHolder;
+
+import androidx.collection.SparseArrayCompat;
 
 import com.facebook.react.bridge.ReadableMap;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.SortedSet;

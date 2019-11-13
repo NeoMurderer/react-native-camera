@@ -1,8 +1,9 @@
 package org.reactnative.camera.events;
 
 import android.graphics.Rect;
-import android.support.v4.util.Pools;
 import android.util.SparseArray;
+
+import androidx.core.util.Pools;
 
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.WritableArray;
